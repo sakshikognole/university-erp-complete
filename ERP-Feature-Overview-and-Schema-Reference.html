@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>University ERP — Feature Overview & MongoDB Schema Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 11pt;
+    color: #111;
+    background: #fff;
+    padding: 48px 64px;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── Cover / Header ── */
+  .cover {
+    text-align: center;
+    padding: 40px 0 32px;
+    border-bottom: 2px solid #111;
+    margin-bottom: 40px;
+  }
+  .cover h1 {
+    font-size: 26pt;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .cover .subtitle {
+    font-size: 13pt;
+    font-weight: 500;
+    color: #2563eb;
+    margin-bottom: 6px;
+  }
+  .cover .tagline {
+    font-size: 10.5pt;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .cover .meta {
+    font-size: 10pt;
+    color: #333;
+    font-weight: 500;
+  }
+
+  /* ── Part headings ── */
+  .part-heading {
+    font-size: 18pt;
+    font-weight: 700;
+    color: #2563eb;
+    border-bottom: 1.5px solid #2563eb;
+    padding-bottom: 6px;
+    margin: 36px 0 24px;
+  }
+
+  /* ── Feature headings ── */
+  h2.feature {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 28px 0 8px;
+  }
+
+  h3.collection {
+    font-size: 10pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #374151;
+    margin: 14px 0 4px;
+  }
+
+  h3.sub {
+    font-size: 11pt;
+    font-weight: 700;
+    margin: 14px 0 6px;
+    color: #111;
+  }
+
+  p { margin-bottom: 8px; }
+
+  ul {
+    margin: 6px 0 10px 20px;
+  }
+  ul li { margin-bottom: 4px; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 16px;
+    font-size: 10pt;
+  }
+  thead th {
+    background: #1e3a5f;
+    color: #fff;
+    padding: 7px 10px;
+    text-align: left;
+    font-weight: 600;
+  }
+  tbody tr:nth-child(even) { background: #f1f5f9; }
+  tbody tr:nth-child(odd)  { background: #fff; }
+  tbody td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  tbody td:first-child { font-weight: 600; color: #1e40af; }
+
+  /* ── Code blocks (JSON example) ── */
+  pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9pt;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 10px 0 18px;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  code { font-family: 'Source Code Pro', monospace; font-size: 9pt; }
+
+  /* ── Note / italic callout ── */
+  .note {
+    font-size: 9.5pt;
+    color: #555;
+    font-style: italic;
+    margin: -8px 0 14px;
+  }
+
+  /* ── Page break for print ── */
+  .page-break { page-break-before: always; }
+
+  @media print {
+    body { padding: 24px 40px; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     COVER
+═══════════════════════════════════════════════════ -->
+<div class="cover">
+  <h1>University ERP System</h1>
+  <p class="subtitle">Feature Overview &amp; MongoDB Schema Reference</p>
+  <p class="tagline">Feature-level walkthrough and field-level schema definitions for the assigned feature modules.</p>
+  <p class="meta">Sakshi Kognole &nbsp;|&nbsp; September 2026</p>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — FEATURE OVERVIEW
+═══════════════════════════════════════════════════ -->
+<div class="part-heading">Part 1 — Feature Overview</div>
+
+
+<!-- 1. Books -->
+<h2 class="feature">1. Book Management</h2>
+<p>Manages the university library book catalogue. Full CRUD with search, pagination, and mobile-responsive display.</p>
+<ul>
+  <li><strong>List view</strong> — paginated table with columns: Book ID, #, Title, Author, Copies, Location, Department. Configurable items-per-page.</li>
+  <li><strong>Search</strong> — searches across Book Title, Author Name, and Book ID using a debounced search bar.</li>
+  <li><strong>Book ID</strong> — entered by the user on the Add form (e.g. BK-001, CS-101). Validated as unique before saving. Read-only on the Edit form. Existing books without an ID are automatically assigned sequential BK-NNN IDs on startup.</li>
+  <li><strong>Add / Edit form</strong> — collects Book ID, Title, Author Name, Total Copies, Book Location, and Department (dropdown: Artificial Intelligence / Computer Science / Civil / Electronics).</li>
+  <li><strong>Duplicate validation</strong> — before saving, the full database is searched for an existing book with the same Title + Author. If found, a warning banner with an OK button is shown inside the modal. Book ID uniqueness is also validated.</li>
+  <li><strong>Enter key submit</strong> — pressing Enter from any field (except textarea) submits the form.</li>
+  <li><strong>View modal</strong> — displays all book details including the correct human-readable Book ID.</li>
+  <li><strong>Delete</strong> — confirmation dialog before deletion.</li>
+  <li><strong>Mobile</strong> — on screens ≤ 768px, books display as accordion cards instead of a table. Tapping a card expands it to show all details and action buttons. Only one card is open at a time.</li>
+  <li><strong>Skeleton loader</strong> — while data loads, a shimmer skeleton matching the table structure is shown instead of a blank screen.</li>
+</ul>
+
+
+<!-- 2. Clubs -->
+<h2 class="feature">2. Club Management</h2>
+<p>Manages university clubs and their hierarchical structure (parent clubs and sub-clubs).</p>
+<ul>
+  <li><strong>List view</strong> — card grid showing Club ID, name, category, status badge (Active / Inactive), faculty coordinator, student lead, and member count.</li>
+  <li><strong>Parent / Sub-club hierarchy</strong> — a club can optionally have a <code>parentClubId</code> linking it to a parent club, supporting nested club structures.</li>
+  <li><strong>Add / Edit form</strong> — collects Club ID, Club Name, Category, Parent Club ID (optional), Description, Faculty Coordinator, Student Lead Name, Student Lead ID, Student Lead Role, Active Members, and Status.</li>
+  <li><strong>View modal</strong> — shows full club details in a read-only popup.</li>
+  <li><strong>Delete</strong> — confirmation dialog before deletion.</li>
+</ul>
+
+
+<!-- 3. Sports -->
+<h2 class="feature">3. Sport Management</h2>
+<p>Manages university sports — each sport is linked to a venue and has a defined capacity and status.</p>
+<ul>
+  <li><strong>List view</strong> — card grid showing Sport ID, sport name, capacity, status badge (ACTIVE / INACTIVE), linked venue, and description.</li>
+  <li><strong>Add / Edit form</strong> — collects Sport ID, Sport Name, Capacity, Status, Venue ID, and Description.</li>
+  <li><strong>Validation</strong> — Sport ID required and unique; capacity must be ≥ 1; status must be ACTIVE or INACTIVE.</li>
+  <li><strong>View modal</strong> — read-only detail popup.</li>
+  <li><strong>Delete</strong> — confirmation before deletion.</li>
+</ul>
+
+
+<!-- 4. Sport Teams -->
+<h2 class="feature">4. Sport Teams</h2>
+<p>Manages teams within a sport — each team has a coach, captain, and a roster of students. Supports a join-request workflow.</p>
+<ul>
+  <li><strong>List view</strong> — table showing Team ID, Sport Name, Coach Name, Captain Name, and roster count.</li>
+  <li><strong>Add / Edit form</strong> — collects Team ID, Sport ID / Sport Name, Coach Name, and Captain Name.</li>
+  <li><strong>Roster management</strong> — inside the team detail view, students can be added to the roster by PRN lookup. Each roster entry stores PRN and student name. Students can be removed individually.</li>
+  <li><strong>Join requests</strong> — students can submit a join request (PENDING). The team manager can accept or ignore each request. Accepted requests auto-add the student to the roster.</li>
+  <li><strong>URL-based navigation</strong> — viewing a team detail changes the URL to <code>?team=T001</code> so refreshing the page restores the detail view correctly.</li>
+  <li><strong>Delete</strong> — confirmation before deletion.</li>
+</ul>
+
+
+<!-- 5. Student Certificate -->
+<h2 class="feature">5. Student Certificate</h2>
+<p>A multi-step workflow for generating official student certificates as PDF documents.</p>
+<ul>
+  <li><strong>Select Student</strong> — searchable table of all students seeded in the Spring Boot students collection. Paginated. Clicking a student navigates to the details page.</li>
+  <li><strong>Student Details</strong> — shows full student info (name, PRN, degree, year). User selects a certificate type from the available document types. Only one type can be selected at a time.</li>
+  <li><strong>Certificate Preview</strong> — renders the certificate as a PDF in an iframe using the selected document type's template, populated with the student's data. User can download the PDF.</li>
+  <li><strong>Add Document Type</strong> — CRUD page for managing certificate types (e.g. Bonafide, NOC). Each type has a name and a default content template. Existing types are listed with edit and delete options.</li>
+  <li><strong>Handout</strong> — bulk certificate generation. Select multiple students and multiple document types. Downloads a ZIP file containing one PDF per student × type combination.</li>
+  <li><strong>Letterhead Editor</strong> — single-document settings page (one record always exists with key = "default"). Edits college name, trust name, address, phone, toll-free, fax, website, email, and logo text. All certificates use this letterhead.</li>
+</ul>
+
+
+<!-- 6. Study Materials -->
+<h2 class="feature">6. Study Materials</h2>
+<p>Two complementary pages — one for teachers to upload materials, one for students to browse and download them.</p>
+<ul>
+  <li><strong>Upload Materials</strong> — teacher-facing page. Step 1: select or create a folder. Step 2: drag-and-drop or click to select files (PDF, JPG, JPEG, PNG, XLS, XLSX). Each file shows upload progress. Files can be removed before uploading. Submit uploads all pending files to the selected folder.</li>
+  <li><strong>Study Materials (Display)</strong> — student/faculty-facing page. Left panel lists folders (subjects). Clicking a folder loads its files in the right panel as a table (filename, type badge, size, date). Files can be previewed inline (PDF/image) or downloaded.</li>
+  <li><strong>Folders</strong> — each folder belongs to a teacher. Folders can be created inline from the upload page. Sub-folder support via <code>parentFolderId</code>.</li>
+  <li><strong>Role-based access</strong> — upload and delete actions are restricted to TEACHER role via <code>X-User-Role</code> header. Students can only view and download.</li>
+</ul>
+
+
+<!-- 7. Payment Management -->
+<h2 class="feature">7. Payment Management</h2>
+<p>Manages university fee payment titles and combinations. Allows admins to define individual fee items and bundle them into payment packages.</p>
+<ul>
+  <li><strong>Payment Titles</strong> — paginated table of individual fee items (Exam Fee, Library Fee, Sports Fee, etc.). Each title has an amount and a discount. Titles are seeded with 6 defaults on startup.</li>
+  <li><strong>Add Payment Title</strong> — inline form to add a new fee title with amount and discount.</li>
+  <li><strong>Payment Combinations</strong> — groups of selected titles bundled into a package. Total amount is auto-calculated as the sum of (amount − discount) for each included title.</li>
+  <li><strong>Create Combination</strong> — checkboxes on each title row let the user select items. Clicking "Add Payment" creates a combination from the selected titles. Duplicate combinations (same set of titles) are rejected.</li>
+</ul>
+
+
+<!-- 8. Hostel Management -->
+<h2 class="feature">8. Hostel Management</h2>
+<p>Manages hostel blocks, rooms within each block, and student-to-room allotments.</p>
+<ul>
+  <li><strong>Block list</strong> — card grid showing Block ID, hostel name, type badge (BOYS / GIRLS), and active/inactive status.</li>
+  <li><strong>Add / Edit block</strong> — modal form collecting Block ID, Hostel Name, Type, and Active status.</li>
+  <li><strong>Block detail view</strong> — clicking a block card navigates to a URL-based detail view (<code>?block=HB001</code>) that lists all rooms in that block. Refreshing the page restores the block detail correctly.</li>
+  <li><strong>Room management</strong> — within the block detail, rooms can be added (Room ID, Room Number, Capacity) and deleted. Each room shows the number of allotted students vs capacity.</li>
+  <li><strong>Student allotment</strong> — students are added to a room by PRN lookup (searches the Spring Boot students collection by PRN). Each room stores the student's PRN and name. Students can be removed from a room individually.</li>
+  <li><strong>Delete block</strong> — confirmation before deletion.</li>
+</ul>
+
+
+<!-- 9. Venue Booking -->
+<h2 class="feature">9. Venue Booking</h2>
+<p>Allows users to submit and manage venue booking requests for university events.</p>
+<ul>
+  <li><strong>Booking request form</strong> — auto-generates a Booking ID (format: VB-YYYYMMDD-XXXX). Dropdowns populated from the live Events API (Spring Boot) and Venues API (Node backend). Collects booking date (date picker, future dates only), start time, end time, purpose, and requested by.</li>
+  <li><strong>Overlap validation</strong> — the backend checks whether the selected venue is already booked (PENDING or APPROVED status) for the same date and overlapping time range. If a conflict exists, returns: <em>"This venue is already booked for the selected date and time."</em></li>
+  <li><strong>Booking list table</strong> — shows all requests with columns: Booking ID, Event, Venue, Date, Start, End, Purpose, Requested By, Status, Actions.</li>
+  <li><strong>Status values</strong> — PENDING (default), APPROVED, REJECTED, CANCELLED — each displayed with a colour-coded badge.</li>
+  <li><strong>Actions</strong> — View (read-only modal with all details), Edit (modal to update fields and status), Delete (confirmation before deletion).</li>
+  <li><strong>Status update</strong> — a dedicated PATCH endpoint allows updating only the status without changing other fields.</li>
+</ul>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — MONGODB SCHEMA REFERENCE
+═══════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div class="part-heading">Part 2 — MongoDB Schema Reference</div>
+<p style="margin-bottom:20px;font-style:italic;color:#555;font-size:10pt;">
+  Field-level schema definitions and example documents for the assigned feature modules.
+  All collections use MongoDB (Spring Boot — Spring Data MongoDB).
+</p>
+
+
+<!-- Schema 1: Books -->
+<h2 class="feature">1. Book Management</h2>
+<h3 class="collection">Collection: books</h3>
+<h3 class="sub">Schema</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id — MongoDB auto-generated ObjectId</td></tr>
+    <tr><td>bookId</td><td>String</td><td>@Indexed(unique=true, sparse=true) — user-provided; existing books auto-assigned BK-001, BK-002…</td></tr>
+    <tr><td>bookTitle</td><td>String</td><td>@NotBlank("Book title is required")</td></tr>
+    <tr><td>authorName</td><td>String</td><td>@NotBlank("Author name is required")</td></tr>
+    <tr><td>totalCopies</td><td>Integer</td><td>@NotNull, @Min(0, "Total copies cannot be negative")</td></tr>
+    <tr><td>bookLocation</td><td>String</td><td>@NotBlank("Book location is required")</td></tr>
+    <tr><td>department</td><td>String</td><td>@NotBlank("Department is required")</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e1",
+  "bookId": "BK-001",
+  "bookTitle": "Introduction to Algorithms",
+  "authorName": "Thomas H. Cormen",
+  "totalCopies": 10,
+  "bookLocation": "Shelf A, Row 2",
+  "department": "Computer Science"
+}</pre>
+<p class="note">bookId is entered by the user on the Add form and validated for uniqueness before saving. It is read-only on the Edit form. On startup, any existing book without a bookId is automatically assigned a sequential BK-NNN identifier.</p>
+
+
+<!-- Schema 2: Clubs -->
+<h2 class="feature">2. Club Management</h2>
+<h3 class="collection">Collection: clubs</h3>
+<h3 class="sub">Schema</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id — MongoDB auto-generated ObjectId</td></tr>
+    <tr><td>clubId</td><td>String</td><td>@Indexed(unique=true)</td></tr>
+    <tr><td>clubName</td><td>String</td><td>required</td></tr>
+    <tr><td>clubCategory</td><td>String</td><td>e.g. Technical, Cultural, Sports</td></tr>
+    <tr><td>parentClubId</td><td>String</td><td>default: null — null/empty = independent club; set to link as sub-club</td></tr>
+    <tr><td>description</td><td>String</td><td>optional</td></tr>
+    <tr><td>facultyCoordinator</td><td>String</td><td>optional</td></tr>
+    <tr><td>studentLeadName</td><td>String</td><td>optional</td></tr>
+    <tr><td>studentLeadId</td><td>String</td><td>optional</td></tr>
+    <tr><td>studentLeadRole</td><td>String</td><td>optional</td></tr>
+    <tr><td>activeMembers</td><td>Integer</td><td>optional</td></tr>
+    <tr><td>status</td><td>String</td><td>default: "Active" — values: Active, Inactive</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e2",
+  "clubId": "CLB001",
+  "clubName": "Coding Club",
+  "clubCategory": "Technical",
+  "parentClubId": null,
+  "description": "A club for competitive programming enthusiasts",
+  "facultyCoordinator": "Dr. Priya Nair",
+  "studentLeadName": "Arjun Mehta",
+  "studentLeadId": "2021001",
+  "studentLeadRole": "President",
+  "activeMembers": 48,
+  "status": "Active"
+}</pre>
+<p class="note">parentClubId links a sub-club to its parent. When null the club is a top-level independent club.</p>
+
+
+<!-- Schema 3: Sports -->
+<h2 class="feature">3. Sport Management</h2>
+<h3 class="collection">Collection: sports</h3>
+<h3 class="sub">Schema</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id — MongoDB auto-generated ObjectId</td></tr>
+    <tr><td>sportId</td><td>String</td><td>@Indexed(unique=true), @NotBlank("Sport ID is required")</td></tr>
+    <tr><td>sportName</td><td>String</td><td>@NotBlank("Sport name is required")</td></tr>
+    <tr><td>capacity</td><td>Integer</td><td>@NotNull, @Min(1, "Capacity must be greater than 0")</td></tr>
+    <tr><td>status</td><td>String</td><td>@NotBlank, @Pattern(regexp="ACTIVE|INACTIVE")</td></tr>
+    <tr><td>venueId</td><td>String</td><td>@NotBlank("Venue ID is required") — references Venue.venueId (Node collection)</td></tr>
+    <tr><td>description</td><td>String</td><td>optional</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e3",
+  "sportId": "SPT001",
+  "sportName": "Cricket",
+  "capacity": 22,
+  "status": "ACTIVE",
+  "venueId": "GRNDB-01",
+  "description": "University cricket team, practices Tue/Thu"
+}</pre>
+
+
+<!-- Schema 4: Sport Teams -->
+<h2 class="feature">4. Sport Teams</h2>
+<h3 class="collection">Collection: sport_teams</h3>
+<h3 class="sub">Schema — sport_teams</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>teamId</td><td>String</td><td>@Indexed(unique=true)</td></tr>
+    <tr><td>sportId</td><td>String</td><td>references Sport.sportId</td></tr>
+    <tr><td>sportName</td><td>String</td><td>denormalized for display</td></tr>
+    <tr><td>coachName</td><td>String</td><td>required</td></tr>
+    <tr><td>captainName</td><td>String</td><td>optional</td></tr>
+    <tr><td>roster</td><td>List&lt;RosterEntry&gt;</td><td>default: [] — embedded sub-documents</td></tr>
+    <tr><td>roster[].studentPrn</td><td>String</td><td>trimmed</td></tr>
+    <tr><td>roster[].studentName</td><td>String</td><td>trimmed</td></tr>
+  </tbody>
+</table>
+<h3 class="collection">Collection: team_requests</h3>
+<h3 class="sub">Schema — team_requests</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>requestId</td><td>String</td><td>@Indexed(unique=true)</td></tr>
+    <tr><td>teamId</td><td>String</td><td>references SportTeam.teamId</td></tr>
+    <tr><td>studentPrn</td><td>String</td><td>required</td></tr>
+    <tr><td>studentName</td><td>String</td><td>required</td></tr>
+    <tr><td>status</td><td>String</td><td>default: "PENDING" — values: PENDING, ACCEPTED, IGNORED</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document — sport_teams</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e4",
+  "teamId": "T001",
+  "sportId": "SPT001",
+  "sportName": "Cricket",
+  "coachName": "Mr. Rajesh Verma",
+  "captainName": "Arjun Mehta",
+  "roster": [
+    { "studentPrn": "PRN2024001", "studentName": "Arjun Mehta" },
+    { "studentPrn": "PRN2024002", "studentName": "Ravi Sharma" }
+  ]
+}</pre>
+<h3 class="sub">Example Document — team_requests</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e5",
+  "requestId": "REQ001",
+  "teamId": "T001",
+  "studentPrn": "PRN2024003",
+  "studentName": "Neha Desai",
+  "status": "PENDING"
+}</pre>
+
+
+<!-- Schema 5: Student Certificate -->
+<h2 class="feature">5. Student Certificate</h2>
+<h3 class="collection">Collection: students</h3>
+<h3 class="sub">Schema — students (Spring Boot certificate context)</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>studentId</td><td>String</td><td>@Indexed(unique=true) — e.g. STU001</td></tr>
+    <tr><td>studentName</td><td>String</td><td>required</td></tr>
+    <tr><td>gender</td><td>String</td><td>e.g. Male, Female</td></tr>
+    <tr><td>prn</td><td>String</td><td>required — used for PRN lookup</td></tr>
+    <tr><td>division</td><td>String</td><td>e.g. A, B</td></tr>
+    <tr><td>yearOfEnrollment</td><td>String</td><td>e.g. 2021</td></tr>
+    <tr><td>studyingYear</td><td>String</td><td>e.g. Third Year</td></tr>
+    <tr><td>degreeProgramName</td><td>String</td><td>e.g. B.Tech Artificial Intelligence and Data Science</td></tr>
+    <tr><td>academicYear</td><td>String</td><td>e.g. 2026-27</td></tr>
+  </tbody>
+</table>
+<h3 class="collection">Collection: document_types</h3>
+<h3 class="sub">Schema — document_types</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>documentName</td><td>String</td><td>@Indexed(unique=true) — e.g. Bonafide Certificate, NOC</td></tr>
+    <tr><td>defaultContent</td><td>String</td><td>Template text with placeholders</td></tr>
+  </tbody>
+</table>
+<h3 class="collection">Collection: letterhead</h3>
+<h3 class="sub">Schema — letterhead (single document, key = "default")</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>key</td><td>String</td><td>always "default" — singleton document</td></tr>
+    <tr><td>trustName</td><td>String</td><td>required</td></tr>
+    <tr><td>collegeName</td><td>String</td><td>required</td></tr>
+    <tr><td>address</td><td>String</td><td>required</td></tr>
+    <tr><td>phone</td><td>String</td><td>optional</td></tr>
+    <tr><td>tollFree</td><td>String</td><td>optional</td></tr>
+    <tr><td>fax</td><td>String</td><td>optional</td></tr>
+    <tr><td>website</td><td>String</td><td>optional</td></tr>
+    <tr><td>email</td><td>String</td><td>optional</td></tr>
+    <tr><td>logoText</td><td>String</td><td>short text displayed in the logo area on generated PDFs</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document — letterhead</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e6",
+  "key": "default",
+  "trustName": "Your Trust / Management Name",
+  "collegeName": "University ERP Institute of Technology",
+  "address": "123 College Road, City - 000000, State, India",
+  "phone": "+91-0000-000000",
+  "tollFree": "1800-000-0000",
+  "fax": "+91-0000-000001",
+  "website": "www.university.edu",
+  "email": "contact@university.edu",
+  "logoText": "LOGO"
+}</pre>
+<p class="note">The letterhead collection always contains exactly one document with key = "default". All generated certificates and handouts use this document for their header.</p>
+
+
+<!-- Schema 6: Study Materials -->
+<h2 class="feature">6. Study Materials</h2>
+<h3 class="collection">Collection: material_folders</h3>
+<h3 class="sub">Schema — material_folders</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>folderId</td><td>String</td><td>unique identifier</td></tr>
+    <tr><td>folderName</td><td>String</td><td>required</td></tr>
+    <tr><td>teacherId</td><td>String</td><td>references the teacher who created the folder</td></tr>
+    <tr><td>parentFolderId</td><td>String</td><td>default: null — null = root-level folder</td></tr>
+    <tr><td>createdDate</td><td>LocalDateTime</td><td>auto-set on creation</td></tr>
+    <tr><td>updatedDate</td><td>LocalDateTime</td><td>auto-set on update</td></tr>
+  </tbody>
+</table>
+<h3 class="collection">Collection: materials</h3>
+<h3 class="sub">Schema — materials</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>materialId</td><td>String</td><td>pattern: MAT-XXXXXXXX (8 hex chars)</td></tr>
+    <tr><td>fileName</td><td>String</td><td>display name; can be renamed by teacher</td></tr>
+    <tr><td>storedFileName</td><td>String</td><td>actual filename on disk; never changes after upload</td></tr>
+    <tr><td>fileType</td><td>String</td><td>enum: PDF, JPG, JPEG, PNG, XLS, XLSX</td></tr>
+    <tr><td>fileSize</td><td>long</td><td>file size in bytes</td></tr>
+    <tr><td>teacherId</td><td>String</td><td>references the uploader</td></tr>
+    <tr><td>folderId</td><td>String</td><td>references MaterialFolder.folderId</td></tr>
+    <tr><td>fileUrl</td><td>String</td><td>relative path: /api/materials/{id}/download</td></tr>
+    <tr><td>uploadedDate</td><td>LocalDateTime</td><td>auto-set on upload</td></tr>
+    <tr><td>updatedDate</td><td>LocalDateTime</td><td>auto-set on rename/update</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document — materials</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e7",
+  "materialId": "MAT-A1B2C3D4",
+  "fileName": "Data Structures Notes.pdf",
+  "storedFileName": "ds-notes-20260901-143022.pdf",
+  "fileType": "PDF",
+  "fileSize": 1048576,
+  "teacherId": "teacher@university.edu",
+  "folderId": "FLD-001",
+  "fileUrl": "/api/materials/64a1b2c3d4e5f6a7b8c9d0e7/download",
+  "uploadedDate": "2026-09-01T14:30:22",
+  "updatedDate": "2026-09-01T14:30:22"
+}</pre>
+<p class="note">PDF and image files are served with Content-Disposition: inline (preview in browser). XLS/XLSX and other types are served as attachment (forced download).</p>
+
+
+<!-- Schema 7: Payment -->
+<h2 class="feature">7. Payment Management</h2>
+<h3 class="collection">Collection: payment_titles</h3>
+<h3 class="sub">Schema — payment_titles</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>titleId</td><td>String</td><td>auto-generated — pattern: PT001, PT002…</td></tr>
+    <tr><td>title</td><td>String</td><td>required — e.g. "Exam Fee", "Library Fee"</td></tr>
+    <tr><td>amount</td><td>double</td><td>required — gross fee amount in INR</td></tr>
+    <tr><td>discount</td><td>double</td><td>required — discount value in INR (not a percentage)</td></tr>
+  </tbody>
+</table>
+<h3 class="collection">Collection: payment_combinations</h3>
+<h3 class="sub">Schema — payment_combinations</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>paymentId</td><td>String</td><td>auto-generated — pattern: PAY001, PAY002…</td></tr>
+    <tr><td>paymentTitles</td><td>List&lt;String&gt;</td><td>sorted list of title names included in this combination</td></tr>
+    <tr><td>totalAmount</td><td>double</td><td>computed as Σ(amount − discount) for each included title</td></tr>
+    <tr><td>createdAt</td><td>LocalDateTime</td><td>auto-set on creation</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document — payment_titles</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e8",
+  "titleId": "PT001",
+  "title": "Exam Fee",
+  "amount": 2000.0,
+  "discount": 100.0
+}</pre>
+<h3 class="sub">Example Document — payment_combinations</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e9",
+  "paymentId": "PAY001",
+  "paymentTitles": ["Exam Fee", "Library Fee", "Sports Fee"],
+  "totalAmount": 3250.0,
+  "createdAt": "2026-09-01T10:00:00"
+}</pre>
+<p class="note">6 default payment titles are seeded automatically on every Spring Boot startup. totalAmount is computed server-side and never entered by the user.</p>
+
+
+<!-- Schema 8: Hostel Management -->
+<h2 class="feature">8. Hostel Management</h2>
+<h3 class="collection">Collection: hostel_blocks</h3>
+<h3 class="sub">Schema — hostel_blocks</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>blockId</td><td>String</td><td>@Indexed(unique=true) — e.g. HB001, HB002</td></tr>
+    <tr><td>hostelName</td><td>String</td><td>required — e.g. "Shivaji Block"</td></tr>
+    <tr><td>type</td><td>String</td><td>required — values: BOYS, GIRLS</td></tr>
+    <tr><td>active</td><td>boolean</td><td>default: true</td></tr>
+  </tbody>
+</table>
+<h3 class="collection">Collection: hostel_rooms</h3>
+<h3 class="sub">Schema — hostel_rooms</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id</td></tr>
+    <tr><td>roomId</td><td>String</td><td>unique — e.g. HR001, HR002</td></tr>
+    <tr><td>blockId</td><td>String</td><td>references HostelBlock.blockId</td></tr>
+    <tr><td>roomNo</td><td>String</td><td>e.g. "101", "A-12"</td></tr>
+    <tr><td>capacity</td><td>int</td><td>required — max students per room</td></tr>
+    <tr><td>students</td><td>List&lt;RoomStudent&gt;</td><td>default: [] — embedded sub-documents</td></tr>
+    <tr><td>students[].studentPrn</td><td>String</td><td>trimmed</td></tr>
+    <tr><td>students[].studentName</td><td>String</td><td>trimmed</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document — hostel_blocks</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0ea",
+  "blockId": "HB001",
+  "hostelName": "Shivaji Block",
+  "type": "BOYS",
+  "active": true
+}</pre>
+<h3 class="sub">Example Document — hostel_rooms</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0eb",
+  "roomId": "HR001",
+  "blockId": "HB001",
+  "roomNo": "101",
+  "capacity": 3,
+  "students": [
+    { "studentPrn": "PRN2024001", "studentName": "Arjun Mehta" },
+    { "studentPrn": "PRN2024002", "studentName": "Ravi Sharma" }
+  ]
+}</pre>
+<p class="note">Students are added to a room by PRN lookup against the Spring Boot students collection. The students array stores a denormalized copy of PRN and name for fast rendering.</p>
+
+
+<!-- Schema 9: Venue Booking -->
+<h2 class="feature">9. Venue Booking</h2>
+<h3 class="collection">Collection: venue_bookings</h3>
+<h3 class="sub">Schema</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Constraints</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>String</td><td>@Id — MongoDB auto-generated ObjectId</td></tr>
+    <tr><td>bookingId</td><td>String</td><td>@Indexed(unique=true), @NotBlank — auto-generated as VB-YYYYMMDD-XXXX</td></tr>
+    <tr><td>eventId</td><td>String</td><td>@NotBlank("Event ID is required") — references Spring Boot events collection</td></tr>
+    <tr><td>venueId</td><td>String</td><td>@NotBlank("Venue ID is required") — references Node backend venues collection</td></tr>
+    <tr><td>bookingDate</td><td>String</td><td>@NotNull("Booking date is required") — stored as "YYYY-MM-DD"</td></tr>
+    <tr><td>startTime</td><td>String</td><td>@NotBlank("Start time is required") — stored as "HH:mm"</td></tr>
+    <tr><td>endTime</td><td>String</td><td>@NotBlank("End time is required") — stored as "HH:mm"; must be &gt; startTime</td></tr>
+    <tr><td>purpose</td><td>String</td><td>optional — free text description</td></tr>
+    <tr><td>requestedBy</td><td>String</td><td>@NotBlank("Requested by is required")</td></tr>
+    <tr><td>status</td><td>String</td><td>@Pattern(regexp="PENDING|APPROVED|REJECTED|CANCELLED"); default: "PENDING"</td></tr>
+  </tbody>
+</table>
+<h3 class="sub">Example Document</h3>
+<pre>{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0ec",
+  "bookingId": "VB-20260902-7483",
+  "eventId": "EVT260001",
+  "venueId": "HALL-001",
+  "bookingDate": "2026-11-15",
+  "startTime": "09:00",
+  "endTime": "13:00",
+  "purpose": "Annual Sports Day Opening Ceremony",
+  "requestedBy": "Prof. Sharma",
+  "status": "PENDING"
+}</pre>
+<p class="note">The overlap check queries for any existing booking on the same venueId and bookingDate where the time ranges intersect AND status is PENDING or APPROVED. CANCELLED and REJECTED bookings are excluded from the conflict check.</p>
+
+</body>
+</html>

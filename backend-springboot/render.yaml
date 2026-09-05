@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: university-erp-spring
+    runtime: docker
+    region: singapore
+    plan: free
+    rootDir: .
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb+srv://khushbubaraskar2608_db_user:jFKahNQKYyDnXJn4@cluster0.36paoeu.mongodb.net/university-erp?retryWrites=true&w=majority&appName=Cluster0
+      - key: SPRING_DATA_MONGODB_DATABASE
+        value: university-erp
+      - key: SERVER_PORT
+        value: 8080
+      - key: FRONTEND_URL
+        sync: false    # Set to your Render frontend URL e.g. https://university-erp-frontend.onrender.com

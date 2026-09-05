@@ -1,0 +1,29 @@
+package com.example.demo.book.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+
+    // Reads FRONTEND_URL env var set on Render; falls back to localhost for local dev
+    @Value("${FRONTEND_URL:http://localhost:5173}")
+    private String frontendUrl;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOriginPatterns(
+                    "http://localhost:5173",
+                    "http://localhost:4173",
+                    "http://localhost:3000",
+                    frontendUrl,                  // production Render frontend URL
+                    "https://*.onrender.com"       // covers any Render subdomain
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
+}

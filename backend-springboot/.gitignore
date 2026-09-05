@@ -1,0 +1,22 @@
+# ── Secrets — NEVER commit these ─────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Gradle build output ───────────────────────────────────────
+.gradle/
+build/
+out/
+
+# ── Compiled classes / jars ───────────────────────────────────
+*.class
+*.jar
+*.war
+
+# ── OS / IDE ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+HELP.md
