@@ -27,3 +27,6 @@ Thumbs.db
 .idea/
 *.iml
 .vscode/
+
+# nested git backup folders
+**/.git.bak/
