@@ -1,6 +1,8 @@
 package com.example.demo.student.service;
 
+import com.example.demo.student.model.DocumentType;
 import com.example.demo.student.model.Student;
+import com.example.demo.student.repository.DocumentTypeRepository;
 import com.itextpdf.text.DocumentException;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +15,16 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class HandoutService {
 
-    private final StudentService     studentService;
-    private final CertificateService certificateService;
+    private final StudentService           studentService;
+    private final CertificateService       certificateService;
+    private final DocumentTypeRepository   documentTypeRepository;
 
     public HandoutService(StudentService studentService,
-                          CertificateService certificateService) {
-        this.studentService     = studentService;
-        this.certificateService = certificateService;
+                          CertificateService certificateService,
+                          DocumentTypeRepository documentTypeRepository) {
+        this.studentService         = studentService;
+        this.certificateService     = certificateService;
+        this.documentTypeRepository = documentTypeRepository;
     }
 
     public byte[] generateHandoutZip(List<String> studentIds, List<String> documentTypes)
@@ -28,10 +33,21 @@ public class HandoutService {
         ByteArrayOutputStream zipBytes = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(zipBytes)) {
             for (String studentId : studentIds) {
-                Student student = studentService.getStudentModelById(studentId);
-                String safeName = student.getStudentName().replaceAll("\\s+", "_");
+                Student student  = studentService.getStudentModelById(studentId);
+                String  safeName = student.getStudentName().replaceAll("\\s+", "_");
+
                 for (String docType : documentTypes) {
-                    byte[] pdfBytes = certificateService.generatePdf(studentId);
+                    // FIX D2: look up the document type's custom content instead of
+                    // always using the hardcoded bonafide text.
+                    String content = documentTypeRepository
+                            .findByDocumentName(docType)
+                            .map(DocumentType::getDefaultContent)
+                            .orElse(null);  // null → CertificateService uses its default body
+
+                    byte[] pdfBytes = (content != null && !content.isBlank())
+                            ? certificateService.generatePdfWithContent(studentId, content, docType)
+                            : certificateService.generatePdf(studentId);
+
                     String safeDoc  = docType.replaceAll("\\s+", "_");
                     String fileName = safeName + "_" + safeDoc + ".pdf";
                     ZipEntry entry  = new ZipEntry(fileName);

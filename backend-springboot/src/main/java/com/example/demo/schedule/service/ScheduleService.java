@@ -50,6 +50,7 @@ public class ScheduleService {
         existing.setFacultyName(incoming.getFacultyName());
         existing.setVenueId(incoming.getVenueId());
         existing.setVenueName(incoming.getVenueName());
+        existing.setScheduleDate(incoming.getScheduleDate());
         existing.setDaySlots(incoming.getDaySlots());
         return scheduleRepository.save(existing);
     }

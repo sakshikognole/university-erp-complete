@@ -38,6 +38,10 @@ public class Schedule {
 
     private String venueName;     // denormalized for display
 
+    // Schedule date: stored as "YYYY-MM-DD"
+    @NotBlank(message = "Date is required")
+    private String scheduleDate;
+
     // Each entry: { day: "M", startTime: "09:00", endTime: "10:00" }
     private List<DaySlot> daySlots;
 
@@ -64,6 +68,8 @@ public class Schedule {
     public void   setVenueId(String v)           { this.venueId = v; }
     public String getVenueName()                 { return venueName; }
     public void   setVenueName(String v)         { this.venueName = v; }
+    public String getScheduleDate()              { return scheduleDate; }
+    public void   setScheduleDate(String v)      { this.scheduleDate = v; }
     public List<DaySlot> getDaySlots()           { return daySlots; }
     public void   setDaySlots(List<DaySlot> v)   { this.daySlots = v; }
 

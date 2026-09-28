@@ -32,27 +32,40 @@ public class DocumentController {
             byte[] pdf = (customContent == null || customContent.isBlank())
                     ? certificateService.generatePdf(studentId)
                     : certificateService.generatePdfWithContent(studentId, customContent, docType);
-            return pdfResponse(pdf, studentId);
+            // FIX D8: use inline so browser renders PDF in iframe instead of forcing download
+            return pdfInlineResponse(pdf, studentId);
         } catch (Exception e) {
             System.err.println("[DocumentController] PDF error: " + e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }
 
-    // GET /api/documents/bonafide/{studentId}  — used by HandoutService
+    // GET /api/documents/bonafide/{studentId}  — used by HandoutService (force download)
     @GetMapping("/bonafide/{studentId}")
     public ResponseEntity<byte[]> generateDefault(@PathVariable String studentId) {
         try {
-            return pdfResponse(certificateService.generatePdf(studentId), studentId);
+            return pdfAttachmentResponse(certificateService.generatePdf(studentId), studentId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
-    private ResponseEntity<byte[]> pdfResponse(byte[] pdf, String studentId) {
+    // inline — browser previews PDF (used for certificate preview page)
+    private ResponseEntity<byte[]> pdfInlineResponse(byte[] pdf, String studentId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "certificate_" + studentId + ".pdf");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=\"certificate_" + studentId + ".pdf\"");
+        headers.setContentLength(pdf.length);
+        return ResponseEntity.ok().headers(headers).body(pdf);
+    }
+
+    // attachment — browser downloads PDF (used for handout/bulk download)
+    private ResponseEntity<byte[]> pdfAttachmentResponse(byte[] pdf, String studentId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"certificate_" + studentId + ".pdf\"");
         headers.setContentLength(pdf.length);
         return ResponseEntity.ok().headers(headers).body(pdf);
     }
