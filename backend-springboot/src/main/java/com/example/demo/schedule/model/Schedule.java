@@ -42,6 +42,11 @@ public class Schedule {
     @NotBlank(message = "Date is required")
     private String scheduleDate;
 
+    // For exam schedules (optional fields)
+    private String examId;      // If this is an exam schedule, store exam ID
+    private String examName;    // Exam name for display
+    private String classroom;   // Classroom for exam schedule
+
     // Each entry: { day: "M", startTime: "09:00", endTime: "10:00" }
     private List<DaySlot> daySlots;
 
@@ -70,6 +75,12 @@ public class Schedule {
     public void   setVenueName(String v)         { this.venueName = v; }
     public String getScheduleDate()              { return scheduleDate; }
     public void   setScheduleDate(String v)      { this.scheduleDate = v; }
+    public String getExamId()                    { return examId; }
+    public void   setExamId(String v)            { this.examId = v; }
+    public String getExamName()                  { return examName; }
+    public void   setExamName(String v)          { this.examName = v; }
+    public String getClassroom()                 { return classroom; }
+    public void   setClassroom(String v)         { this.classroom = v; }
     public List<DaySlot> getDaySlots()           { return daySlots; }
     public void   setDaySlots(List<DaySlot> v)   { this.daySlots = v; }
 
