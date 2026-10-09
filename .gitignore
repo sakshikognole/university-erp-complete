@@ -30,3 +30,11 @@ Thumbs.db
 
 # nested git backup folders
 **/.git.bak/
+
+# ── Documentation & Reports (Internal) ───────────────────────
+*-Integration-Analysis-Report.md
+UI-CONSISTENCY-*.md
+UI-Consistency-*.md
+UX-Process-*.md
+START-DOCKER.bat
+test-data/
