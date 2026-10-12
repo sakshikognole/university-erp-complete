@@ -7,11 +7,17 @@
 .gradle/
 build/
 out/
+# Allow the fat jar for Render deployment (no Maven on Render)
+!build/
+!build/libs/
+!build/libs/university-erp-0.0.1-SNAPSHOT.jar
 
 # ── Compiled classes / jars ───────────────────────────────────
 *.class
 *.jar
 *.war
+# Allow the fat jar
+!build/libs/university-erp-0.0.1-SNAPSHOT.jar
 
 # ── OS / IDE ──────────────────────────────────────────────────
 .DS_Store

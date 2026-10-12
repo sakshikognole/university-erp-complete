@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const path = require('path');
 
 const dns = require('dns');
@@ -22,12 +22,20 @@ const transportRoutes = require('./routes/transportRoutes');
 const alumniRoutes = require('./routes/alumniRoutes');
 const alumniJobRoutes = require('./routes/alumniJobRoutes');
 const systemAnnouncementRoutes = require('./routes/systemAnnouncementRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const announcementRoutes = require('./routes/announcementRoutes');
+const submissionRoutes = require('./routes/submissionRoutes');
+const academicResourceRoutes = require('./routes/academicResourceRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // Routes
@@ -47,6 +55,10 @@ app.use('/api/transport', transportRoutes);
 app.use('/api/alumni', alumniRoutes);
 app.use('/api/alumni-jobs', alumniJobRoutes);
 app.use('/api/system-announcements', systemAnnouncementRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/submissions', submissionRoutes);
+app.use('/api/resources', academicResourceRoutes);
 
 // Fallback for non-API web routes (redirect browser navigation to frontend)
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';

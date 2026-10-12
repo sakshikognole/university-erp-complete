@@ -7,9 +7,7 @@ import com.example.demo.payment.repository.PaymentTitleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,17 +22,13 @@ public class PaymentCombinationService {
         this.titleRepo       = titleRepo;
     }
 
-    // ── Get all combinations ──────────────────────────────────────────────
-
     public List<PaymentCombination> getAll() {
         return combinationRepo.findAll();
     }
 
-    // ── Create combination ────────────────────────────────────────────────
-
     /**
-     * @param selectedTitleIds  list of titleId strings selected by admin
-     * @return created PaymentCombination or throws if duplicate
+     * @param selectedTitleIds list of titleId strings selected by admin
+     * @return created PaymentCombination or throws if duplicate / invalid
      */
     public PaymentCombination create(List<String> selectedTitleIds) {
         if (selectedTitleIds == null || selectedTitleIds.isEmpty()) {
@@ -56,7 +50,7 @@ public class PaymentCombinationService {
                 .sorted()
                 .collect(Collectors.toList());
 
-        // Duplicate check on backend
+        // Duplicate check
         if (combinationRepo.findByPaymentTitles(sortedNames).isPresent()) {
             throw new IllegalStateException("This payment combination already exists.");
         }
@@ -77,8 +71,6 @@ public class PaymentCombinationService {
 
         return combinationRepo.save(combination);
     }
-
-    // ── Auto-increment Payment ID ─────────────────────────────────────────
 
     private String generateNextPaymentId() {
         PaymentCombination last = combinationRepo.findTopByOrderByPaymentIdDesc();

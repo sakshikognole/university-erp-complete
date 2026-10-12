@@ -14,6 +14,6 @@ public interface PaymentCombinationRepository
     // Find by the sorted list of titles — used for duplicate check
     Optional<PaymentCombination> findByPaymentTitles(List<String> paymentTitles);
 
-    // Latest paymentId for auto-increment  (e.g. "PAY005")
+    // Latest paymentId for auto-increment (e.g. "PAY005")
     PaymentCombination findTopByOrderByPaymentIdDesc();
 }

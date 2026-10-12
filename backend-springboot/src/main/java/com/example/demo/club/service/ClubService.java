@@ -19,6 +19,12 @@ public class ClubService {
         return clubRepository.findAll();
     }
 
+    public Club getByClubId(String clubId) {
+        return clubRepository.findByClubId(clubId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Club not found with ID: " + clubId));
+    }
+
     public Club create(Club club) {
         if (club.getClubId() == null || club.getClubId().isBlank()) {
             throw new IllegalArgumentException("Club ID is required.");

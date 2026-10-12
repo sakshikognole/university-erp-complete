@@ -2,7 +2,6 @@ package com.example.demo.payment.controller;
 
 import com.example.demo.payment.model.PaymentTitle;
 import com.example.demo.payment.service.PaymentTitleService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

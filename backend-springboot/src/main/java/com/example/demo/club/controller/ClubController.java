@@ -25,6 +25,17 @@ public class ClubController {
         return ResponseEntity.ok(clubService.getAll());
     }
 
+    // GET /api/clubs/{clubId}
+    @GetMapping("/{clubId}")
+    public ResponseEntity<?> getByClubId(@PathVariable String clubId) {
+        try {
+            return ResponseEntity.ok(clubService.getByClubId(clubId));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", ex.getMessage()));
+        }
+    }
+
     // POST /api/clubs
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Club club) {

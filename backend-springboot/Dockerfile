@@ -1,18 +1,11 @@
-# ── Stage 1: Build with Gradle ─────────────────────────────
-FROM gradle:8.5-jdk17 AS builder
-WORKDIR /app
+# ── Pre-built jar approach — no Maven download needed on Render ──
+# Build locally with: .\gradlew.bat bootJar
+# Then commit build/libs/*.jar and push to GitHub
 
-# Copy everything at once — ensures src changes always invalidate cache
-COPY . .
-
-# Build the fat jar (--no-build-cache forces full recompile)
-RUN gradle bootJar --no-daemon --no-build-cache
-
-# ── Stage 2: Minimal production runtime ────────────────────
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY build/libs/university-erp-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 9090
 

@@ -3,11 +3,13 @@ package com.example.demo.payment;
 import com.example.demo.payment.model.PaymentTitle;
 import com.example.demo.payment.repository.PaymentTitleRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@Order(4)
 public class PaymentDataSeeder implements CommandLineRunner {
 
     private final PaymentTitleRepository repo;
