@@ -38,6 +38,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes
 app.get('/', (req, res) => {
   res.send('University ERP Node.js & Express server is running!');
