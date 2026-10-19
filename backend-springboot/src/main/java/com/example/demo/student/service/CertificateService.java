@@ -47,7 +47,23 @@ public class CertificateService {
         return buildPdf(student, body, null);
     }
 
-    /** Custom body — used by DocumentController */
+    /** Custom body — used by DocumentController with pre-resolved student details */
+    public byte[] generatePdfWithDetails(
+            String studentId, String studentName, String degreeProgramName,
+            String studyingYear, String academicYear, String gender,
+            String customContent, String docType) throws DocumentException {
+        // Build a lightweight Student object from the passed details
+        Student student = new Student();
+        student.setStudentId(studentId);
+        student.setStudentName(studentName.isBlank() ? studentId : studentName);
+        student.setDegreeProgramName(degreeProgramName);
+        student.setStudyingYear(studyingYear);
+        student.setAcademicYear(academicYear);
+        student.setGender(gender);
+        return buildPdf(student, customContent, docType);
+    }
+
+    /** Custom body — used by DocumentController (legacy, looks up student from DB) */
     public byte[] generatePdfWithContent(String studentId, String customContent, String docType)
             throws DocumentException {
         Student student = studentService.getStudentModelById(studentId);

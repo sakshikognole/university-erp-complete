@@ -24,6 +24,12 @@ public class DocumentController {
         String studentId     = body.get("studentId");
         String customContent = body.get("customContent");
         String docType       = body.get("docType");
+        // Accept student details directly from frontend (for Node.js students)
+        String studentName       = body.getOrDefault("studentName", "");
+        String degreeProgramName = body.getOrDefault("degreeProgramName", "");
+        String studyingYear      = body.getOrDefault("studyingYear", "");
+        String academicYear      = body.getOrDefault("academicYear", "");
+        String gender            = body.getOrDefault("gender", "");
 
         if (studentId == null || studentId.isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -31,7 +37,10 @@ public class DocumentController {
         try {
             byte[] pdf = (customContent == null || customContent.isBlank())
                     ? certificateService.generatePdf(studentId)
-                    : certificateService.generatePdfWithContent(studentId, customContent, docType);
+                    : certificateService.generatePdfWithDetails(
+                        studentId, studentName, degreeProgramName,
+                        studyingYear, academicYear, gender,
+                        customContent, docType);
             return pdfResponse(pdf, studentId);
         } catch (Exception e) {
             System.err.println("[DocumentController] PDF error: " + e.getMessage());
