@@ -6,6 +6,7 @@ public class StudentResponse {
 
     private String studentId;
     private String studentName;
+    private String name;
     private String gender;
     private String prn;
     private String division;
@@ -19,6 +20,7 @@ public class StudentResponse {
     public StudentResponse(Student s) {
         this.studentId         = s.getStudentId();
         this.studentName       = s.getStudentName();
+        this.name              = s.getStudentName();
         this.gender            = s.getGender();
         this.prn               = s.getPrn();
         this.division          = s.getDivision();
@@ -31,7 +33,9 @@ public class StudentResponse {
     public String getStudentId()                               { return studentId; }
     public void   setStudentId(String v)                       { this.studentId = v; }
     public String getStudentName()                             { return studentName; }
-    public void   setStudentName(String v)                     { this.studentName = v; }
+    public void   setStudentName(String v)                     { this.studentName = v; this.name = v; }
+    public String getName()                                    { return name != null ? name : studentName; }
+    public void   setName(String v)                            { this.name = v; this.studentName = v; }
     public String getGender()                                  { return gender; }
     public void   setGender(String v)                          { this.gender = v; }
     public String getPrn()                                     { return prn; }

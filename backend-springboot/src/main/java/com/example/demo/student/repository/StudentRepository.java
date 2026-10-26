@@ -13,4 +13,5 @@ public interface StudentRepository extends MongoRepository<Student, String> {
 
     // Used by Hostel and SportTeam PRN lookup
     Optional<Student> findByPrn(String prn);
+    Optional<Student> findByPrnIgnoreCase(String prn);
 }

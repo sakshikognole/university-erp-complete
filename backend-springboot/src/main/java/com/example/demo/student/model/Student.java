@@ -14,6 +14,7 @@ public class Student {
     private String studentId;
 
     private String studentName;
+    private String name;
     private String gender;
     private String prn;
     private String division;
@@ -29,6 +30,7 @@ public class Student {
                    String studyingYear, String degreeProgramName, String academicYear) {
         this.studentId        = studentId;
         this.studentName      = studentName;
+        this.name             = studentName;
         this.gender           = gender;
         this.prn              = prn;
         this.division         = division;
@@ -42,7 +44,12 @@ public class Student {
     public void   setId(String id)                               { this.id = id; }
     public String getStudentId()                                 { return studentId; }
     public void   setStudentId(String studentId)                 { this.studentId = studentId; }
-    public String getStudentName()                               { return studentName; }
+    public String getName()                                      { return name; }
+    public void   setName(String name)                           { this.name = name; }
+    public String getStudentName()                               { 
+        if (studentName != null && !studentName.isBlank()) return studentName;
+        return name;
+    }
     public void   setStudentName(String studentName)             { this.studentName = studentName; }
     public String getGender()                                    { return gender; }
     public void   setGender(String gender)                       { this.gender = gender; }

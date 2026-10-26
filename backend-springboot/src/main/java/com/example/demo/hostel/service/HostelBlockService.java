@@ -43,7 +43,6 @@ public class HostelBlockService {
         // This prevents collision when records are deleted and re-created
         String nextId = generateNextBlockId();
         block.setBlockId(nextId);
-        block.setActive(true);
         return repo.save(block);
     }
 

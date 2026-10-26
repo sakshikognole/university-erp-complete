@@ -26,7 +26,11 @@ public class StudentService {
     }
 
     public StudentResponse getStudentByPrn(String prn) {
-        Student s = studentRepository.findByPrn(prn)
+        String clean = prn != null ? prn.trim() : "";
+        Student s = studentRepository.findByPrn(clean)
+                .or(() -> studentRepository.findByPrnIgnoreCase(clean))
+                .or(() -> studentRepository.findByPrn(clean.toUpperCase().startsWith("PRN") ? clean.substring(3) : "PRN" + clean))
+                .or(() -> studentRepository.findByPrnIgnoreCase(clean.toUpperCase().startsWith("PRN") ? clean.substring(3) : "PRN" + clean))
                 .orElseThrow(() -> new StudentNotFoundException("PRN: " + prn));
         return new StudentResponse(s);
     }
