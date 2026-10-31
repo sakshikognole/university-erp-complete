@@ -28,5 +28,6 @@ public class HostelBlock {
     public String  getType()                 { return type; }
     public void    setType(String v)         { this.type = v; }
     public boolean isActive()                { return active; }
+    public boolean getActive()               { return active; }
     public void    setActive(boolean v)      { this.active = v; }
 }

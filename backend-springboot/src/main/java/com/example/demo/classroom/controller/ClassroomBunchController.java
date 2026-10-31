@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/classroom-bunches")
-@CrossOrigin(origins = "*")
 public class ClassroomBunchController {
 
     @Autowired

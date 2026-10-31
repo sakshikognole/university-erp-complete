@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ClassroomService {
 
@@ -62,7 +64,17 @@ public class ClassroomService {
 
     // ── Generate ID: CLS-001, CLS-002, ... ────────────────────────────────
     private String generateClassroomId() {
-        long count = repository.count();
-        return String.format("CLS-%03d", count + 1);
+        List<Classroom> all = repository.findAll();
+        int max = all.stream()
+                .map(Classroom::getClassroomId)
+                .filter(id -> id != null && id.startsWith("CLS-"))
+                .map(id -> id.substring(4))
+                .mapToInt(num -> {
+                    try { return Integer.parseInt(num); }
+                    catch (NumberFormatException e) { return 0; }
+                })
+                .max()
+                .orElse(0);
+        return String.format("CLS-%03d", max + 1);
     }
 }
