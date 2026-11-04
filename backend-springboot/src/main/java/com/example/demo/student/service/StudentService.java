@@ -1,13 +1,13 @@
 package com.example.demo.student.service;
 
-import com.example.demo.student.dto.StudentResponse;
 import com.example.demo.student.exception.StudentNotFoundException;
 import com.example.demo.student.model.Student;
 import com.example.demo.student.repository.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -18,25 +18,20 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public List<StudentResponse> getAllStudents() {
-        return studentRepository.findAll()
-                .stream()
-                .map(StudentResponse::new)
-                .collect(Collectors.toList());
+    public Page<Student> getAllStudents(Pageable pageable) {
+        return studentRepository.findAll(pageable);
     }
 
-    public StudentResponse getStudentByPrn(String prn) {
-        String clean = prn != null ? prn.trim() : "";
-        Student s = studentRepository.findByPrn(clean)
-                .or(() -> studentRepository.findByPrnIgnoreCase(clean))
-                .or(() -> studentRepository.findByPrn(clean.toUpperCase().startsWith("PRN") ? clean.substring(3) : "PRN" + clean))
-                .or(() -> studentRepository.findByPrnIgnoreCase(clean.toUpperCase().startsWith("PRN") ? clean.substring(3) : "PRN" + clean))
-                .orElseThrow(() -> new StudentNotFoundException("PRN: " + prn));
-        return new StudentResponse(s);
+    public List<Student> getAllStudentsList() {
+        return studentRepository.findAll();
     }
 
-    public StudentResponse getStudentById(String studentId) {
-        return new StudentResponse(findOrThrow(studentId));
+    public Student saveStudent(Student student) {
+        return studentRepository.save(student);
+    }
+
+    public Student getStudentById(String studentId) {
+        return findOrThrow(studentId);
     }
 
     public Student getStudentModelById(String studentId) {
@@ -48,7 +43,13 @@ public class StudentService {
     }
 
     private Student findOrThrow(String studentId) {
-        return studentRepository.findByStudentId(studentId)
+        if (studentId == null || studentId.isBlank()) {
+            throw new StudentNotFoundException("Student ID cannot be null or empty");
+        }
+        return studentRepository.findById(studentId)
+                .or(() -> studentRepository.findByStudentId(studentId))
+                .or(() -> studentRepository.findByPrn(studentId))
+                .or(() -> studentRepository.findByPrnIgnoreCase(studentId))
                 .orElseThrow(() -> new StudentNotFoundException(studentId));
     }
 }

@@ -60,7 +60,20 @@ public class CertificateService {
         student.setStudyingYear(studyingYear);
         student.setAcademicYear(academicYear);
         student.setGender(gender);
-        return buildPdf(student, customContent, docType);
+
+        String prefix = resolvePrefix(gender);
+        String fullName = prefix.isEmpty()
+                ? student.getStudentName()
+                : prefix + " " + student.getStudentName();
+        String body = (customContent != null && !customContent.isBlank())
+                ? customContent
+                : "        This is to certify that " + fullName +
+                  " is a bonafide student of " + (degreeProgramName != null ? degreeProgramName : "") +
+                  ", currently studying in " + (studyingYear != null ? studyingYear : "") +
+                  " during the Academic Year " + (academicYear != null ? academicYear : "") + ".\n\n" +
+                  "        This certificate is issued upon the student's request for official purposes.";
+
+        return buildPdf(student, body, docType);
     }
 
     /** Custom body — used by DocumentController (legacy, looks up student from DB) */

@@ -3,6 +3,7 @@ package com.example.demo.student.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "students")
 public class Student {
@@ -22,6 +23,12 @@ public class Student {
     private String studyingYear;
     private String degreeProgramName;
     private String academicYear;
+
+    @Field("class")
+    private String studentClass;
+
+    @Field("degree")
+    private String studentDegree;
 
     public Student() {}
 
@@ -59,10 +66,19 @@ public class Student {
     public void   setDivision(String division)                   { this.division = division; }
     public String getYearOfEnrollment()                          { return yearOfEnrollment; }
     public void   setYearOfEnrollment(String yearOfEnrollment)   { this.yearOfEnrollment = yearOfEnrollment; }
-    public String getStudyingYear()                              { return studyingYear; }
+    public String getStudyingYear()                              { 
+        if (studyingYear != null && !studyingYear.isBlank()) return studyingYear;
+        return studentClass != null ? studentClass : "";
+    }
     public void   setStudyingYear(String studyingYear)           { this.studyingYear = studyingYear; }
-    public String getDegreeProgramName()                         { return degreeProgramName; }
+    public String getDegreeProgramName()                         { 
+        if (degreeProgramName != null && !degreeProgramName.isBlank()) return degreeProgramName;
+        return studentDegree != null ? studentDegree : "";
+    }
     public void   setDegreeProgramName(String degreeProgramName) { this.degreeProgramName = degreeProgramName; }
-    public String getAcademicYear()                              { return academicYear; }
+    public String getAcademicYear()                              { 
+        if (academicYear != null && !academicYear.isBlank()) return academicYear;
+        return yearOfEnrollment != null ? yearOfEnrollment : "";
+    }
     public void   setAcademicYear(String academicYear)           { this.academicYear = academicYear; }
 }

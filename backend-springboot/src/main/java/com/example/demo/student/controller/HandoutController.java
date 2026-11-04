@@ -20,24 +20,26 @@ public class HandoutController {
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<?> generate(@RequestBody Map<String, List<String>> body) {
-        List<String> studentIds    = body.get("studentIds");
-        List<String> documentTypes = body.get("documentTypes");
+    public ResponseEntity<?> generate(@RequestBody Map<String, Object> body) {
+        List<String> studentIds    = (List<String>) body.get("studentIds");
+        List<String> documentTypes = (List<String>) body.get("documentTypes");
+        List<Map<String, Object>> students = (List<Map<String, Object>>) body.get("students");
 
-        if (studentIds == null || studentIds.isEmpty()) {
+        if ((studentIds == null || studentIds.isEmpty()) && (students == null || students.isEmpty())) {
             return ResponseEntity.badRequest().body(Map.of("error", "Select at least one student."));
         }
         if (documentTypes == null || documentTypes.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Select at least one document type."));
         }
         try {
-            byte[] zip = handoutService.generateHandoutZip(studentIds, documentTypes);
+            byte[] zip = handoutService.generateHandoutZip(studentIds, documentTypes, students);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType("application/zip"));
             headers.setContentDispositionFormData("attachment", "certificates.zip");
             headers.setContentLength(zip.length);
             return ResponseEntity.ok().headers(headers).body(zip);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", "Failed to generate: " + e.getMessage()));
         }
