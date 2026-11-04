@@ -35,12 +35,15 @@ public class DocumentController {
             return ResponseEntity.badRequest().build();
         }
         try {
-            byte[] pdf = (customContent == null || customContent.isBlank())
-                    ? certificateService.generatePdf(studentId)
-                    : certificateService.generatePdfWithDetails(
+            boolean hasDetails = (studentName != null && !studentName.isBlank())
+                    || (degreeProgramName != null && !degreeProgramName.isBlank())
+                    || (studyingYear != null && !studyingYear.isBlank());
+            byte[] pdf = (hasDetails || (customContent != null && !customContent.isBlank()))
+                    ? certificateService.generatePdfWithDetails(
                         studentId, studentName, degreeProgramName,
                         studyingYear, academicYear, gender,
-                        customContent, docType);
+                        customContent, docType)
+                    : certificateService.generatePdf(studentId);
             return pdfResponse(pdf, studentId);
         } catch (Exception e) {
             System.err.println("[DocumentController] PDF error: " + e.getMessage());
